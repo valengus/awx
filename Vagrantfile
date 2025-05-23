@@ -49,21 +49,21 @@ Vagrant.configure("2") do |config|
       libvirt.management_network_domain  = 'local'
     end
     config.vm.synced_folder '.', '/vagrant', disabled: true
-    config.vm.provision "ansible" do |ansible|
-      ansible.playbook = "environments/local/playfile/bootstrap.yml"  
-      ansible.limit    = "all"
-      ansible.groups = {
-        "k3s"      => ["k3s-master01", "k3s-node0[1:#{$k3s_num_instances}]"],
-        "k3s:vars" => {
-          "bootstrap_disable_firewalld" => "true",
-          "bootstrap_disable_selinux"   => "true",
-          "bootstrap_install_docker"    => "true",
-        }
-      }
-    end
-    config.vm.provision "shell", inline: <<-SHELL
-    curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE='644' sh -s - --docker --disable=traefik
-    SHELL
+    # config.vm.provision "ansible" do |ansible|
+    #   ansible.playbook = "environments/local/playfile/bootstrap.yml"  
+    #   ansible.limit    = "all"
+    #   ansible.groups = {
+    #     "k3s"      => ["k3s-master01", "k3s-node0[1:#{$k3s_num_instances}]"],
+    #     "k3s:vars" => {
+    #       "bootstrap_disable_firewalld" => "true",
+    #       "bootstrap_disable_selinux"   => "true",
+    #       "bootstrap_install_docker"    => "true",
+    #     }
+    #   }
+    # end
+    # config.vm.provision "shell", inline: <<-SHELL
+    # curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE='644' sh -s - --docker --disable=traefik
+    # SHELL
     config.vm.provision "ansible" do |ansible|
       ansible.playbook = "environments/local/playfile/awx-setup.yml"  
     end
