@@ -1,0 +1,4 @@
+---
+roles:
+- name: jenkins
+  source: https://github.com/valengus/jenkins.git

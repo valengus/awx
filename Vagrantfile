@@ -17,14 +17,14 @@ Vagrant.configure("2") do |config|
 
   $num_instances ||= 1
   (1..$num_instances).each do |i|
-    config.vm.define "node0#{i}" do |config|
-      config.vm.hostname = "node0#{i}"
+    config.vm.define "k3s-node0#{i}" do |config|
+      config.vm.hostname = "k3s-node0#{i}"
       config.vm.box      = "generic/oracle9"
       config.vm.provider :libvirt do |libvirt|
         libvirt.cpus                      = 2
         libvirt.memory                    = 4 * 1024
         libvirt.qemu_use_session          = false
-        libvirt.default_prefix            = 'k3s_'
+        libvirt.default_prefix            = 'vagrant_'
         libvirt.management_network_name   = 'vagrant'
         libvirt.management_network_domain = 'local'
       end
@@ -33,15 +33,15 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  config.vm.define "master01" do |config|
-    config.vm.hostname = "master01"
+  config.vm.define "k3s-master01" do |config|
+    config.vm.hostname = "k3s-master01"
     config.vm.box      = "generic/oracle9"
     config.vm.provider :libvirt do |libvirt|
       libvirt.driver                     = "kvm"
       libvirt.qemu_use_session           = false
       libvirt.cpus                       = 2
       libvirt.memory                     = 4 * 1024
-      libvirt.default_prefix             = 'k3s_'
+      libvirt.default_prefix             = 'vagrant_'
       libvirt.management_network_name    = 'vagrant'
       libvirt.management_network_domain  = 'local'
     end
@@ -55,7 +55,7 @@ Vagrant.configure("2") do |config|
     (1..$num_instances).each do |i|
       config.vm.provision "shell", inline: <<-SHELL
       NODETOKEN=$(cat /var/lib/rancher/k3s/server/node-token)
-      sshpass -p "root" ssh -o "StrictHostKeyChecking no" root@node0#{i} "curl -sfL https://get.k3s.io | K3S_URL=https://master01:6443 K3S_TOKEN=$NODETOKEN sh -s - --docker "
+      sshpass -p "root" ssh -o "StrictHostKeyChecking no" root@k3s-node0#{i} "curl -sfL https://get.k3s.io | K3S_URL=https://k3s-master01:6443 K3S_TOKEN=$NODETOKEN sh -s - --docker "
       SHELL
     end
   end
@@ -67,7 +67,7 @@ Vagrant.configure("2") do |config|
       libvirt.cpus                      = 2
       libvirt.memory                    = 4 * 1024
       libvirt.qemu_use_session          = false
-      libvirt.default_prefix            = 'k3s_'
+      libvirt.default_prefix            = 'vagrant_'
       libvirt.management_network_name   = 'vagrant'
       libvirt.management_network_domain = 'local'
     end

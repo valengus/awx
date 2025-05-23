@@ -1,9 +1,10 @@
 ---
 - name: Setup awx
-  hosts: localhost
+  hosts: k3s-master01
   become: true
 
   vars:
+    awx_organization: organization
     awx_connection: &awx_connection
       controller_host: "http://localhost:30080"
       controller_username: "admin"
@@ -13,8 +14,7 @@
 
   - name: Add organizations
     awx.awx.organization:
-      name: "organization"
-      description: "organization"
+      name: "{{ awx_organization }}"
       state: present
       <<: *awx_connection
 
@@ -22,8 +22,58 @@
     awx.awx.credential:
       name: root
       credential_type: Machine
-      organization: "organization"
+      organization: "{{ awx_organization }}"
       inputs:
         username: root
         password: "root"
+      <<: *awx_connection
+
+  - name: Add projects
+    awx.awx.project:
+      name: "awx"
+      description: "awx"
+      organization: "{{ awx_organization }}"
+      state: present
+      scm_type: git
+      scm_url: https://github.com/valengus/awx.git
+      scm_update_on_launch: false
+      <<: *awx_connection
+
+  - name: Add inventories
+    awx.awx.inventory:
+      name: "local"
+      organization: "{{ awx_organization }}"
+      state: present
+      <<: *awx_connection
+
+  - name: Add an inventory source
+    awx.awx.inventory_source:
+      name: "git-inventory-local"
+      inventory: local
+      overwrite: True
+      update_on_launch: True
+      organization: "{{ awx_organization }}"
+      source: scm
+      source_project: awx
+      <<: *awx_connection
+
+  - name: Update Inventory source
+    awx.awx.inventory_source_update:
+      name: "git-inventory-local"
+      inventory: "local"
+      organization: "{{ awx_organization }}"
+      wait: true
+      <<: *awx_connection
+
+  - name: Create job template
+    awx.awx.job_template:
+      name: "awx-setup"
+      job_type: "run"
+      organization: "{{ awx_organization }}"
+      inventory: "local"
+      project: "awx"
+      playbook: "projects/local/playfile/awx-setup.yml"
+      credentials:
+      - "root"
+      state: "present"
       <<: *awx_connection
