@@ -1,0 +1,44 @@
+---
+- name: Setup awx
+  hosts: localhost
+  become: true
+
+  vars:
+    awx_connection: &awx_connection
+      controller_host: "http://localhost:30080"
+      controller_username: "admin"
+      controller_password: "password"
+
+  tasks:
+
+  - name: Delete "Demo Job Template"
+    awx.awx.job_template:
+      name: "Demo Job Template"
+      state: absent
+      <<: *awx_connection
+
+  - name: Delete "Demo Credential"
+    awx.awx.credential:
+      name: "Demo Credential"
+      credential_type: Machine
+      state: absent
+      <<: *awx_connection
+
+  - name: Delete "Demo Inventory"
+    awx.awx.inventory:
+      name: "Demo Inventory"
+      organization: "Default"
+      state: absent
+      <<: *awx_connection
+
+  - name: Delete "Demo Project"
+    awx.awx.project:
+      name: "Demo Project"
+      state: absent
+      <<: *awx_connection
+
+  - name: Delete "Default organization"
+    awx.awx.organization:
+      name: "Default"
+      state: absent
+      <<: *awx_connection
