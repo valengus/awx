@@ -84,16 +84,16 @@
       group: root
       mode: '0600'
 
-  - name: Wait until AWX is up
-    ansible.builtin.uri:
-      url: http://k3s-master01:30080/api/v2/ping/
-      method: GET
-      return_content: yes
-      status_code: 200
-    register: awx_health
-    retries: 30
-    delay: 10
-    until: awx_health.json.heartbeat is defined
+  # - name: Wait until AWX is up
+  #   ansible.builtin.uri:
+  #     url: http://localhost:30080/api/v2/ping/
+  #     method: GET
+  #     return_content: yes
+  #     status_code: 200
+  #   register: awx_health
+  #   retries: 30
+  #   delay: 10
+  #   until: awx_health.json.heartbeat is defined
 
   - name: Add organizations
     awx.awx.organization:
