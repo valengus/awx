@@ -62,6 +62,7 @@
       name: "git-inventory-local"
       inventory: "local"
       organization: "{{ awx_organization }}"
+      source_path: projects/local/inventories/hosts.ini
       wait: true
       <<: *awx_connection
 
