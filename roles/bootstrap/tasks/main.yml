@@ -1,0 +1,29 @@
+---
+- name: Add users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    state: present
+    shell: "{{ item.shell }}"
+    password: "{{ item.password }}"
+  with_items: "{{ bootstrap_users }}"
+
+- name: Install defaults package
+  ansible.builtin.package:
+    name: "{{ bootstrap_defaults_packages }}"
+    state: present
+
+- name: Disable firewalld
+  ansible.builtin.include_tasks: disable_firewalld.yml
+  when: bootstrap_disable_firewalld
+
+- name: Set firewalld
+  ansible.builtin.include_tasks: firewalld.yml
+  when: bootstrap_disable_firewalld == false
+
+- name: Disable selinux
+  ansible.builtin.include_tasks: disable_selinux.yml
+  when: bootstrap_disable_selinux
+
+- name: Install docker
+  ansible.builtin.include_tasks: install_docker.yml
+  when: bootstrap_install_docker

@@ -1,0 +1,17 @@
+---
+- name: Install firewalld
+  ansible.builtin.package:
+    name: firewalld
+    state: present
+
+- name: Start & Enable firewalld
+  ansible.builtin.service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Permit traffic in default zone for ssh service
+  ansible.posix.firewalld:
+    service: ssh
+    permanent: yes
+    state: enabled

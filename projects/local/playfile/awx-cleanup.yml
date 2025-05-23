@@ -1,6 +1,6 @@
 ---
-- name: Setup awx
-  hosts: localhost
+- name: CleanUp awx
+  hosts: k3s-master01
   become: true
 
   vars:
