@@ -86,7 +86,7 @@
 
   - name: Wait until AWX is up
     ansible.builtin.uri:
-      url: http://localhost:30080/api/v2/ping/
+      url: http://k3s-master01:30080/api/v2/ping/
       method: GET
       return_content: yes
       status_code: 200
