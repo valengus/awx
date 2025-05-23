@@ -55,6 +55,7 @@
       organization: "{{ awx_organization }}"
       source: scm
       source_project: awx
+      source_path: projects/local/inventories/hosts.ini
       <<: *awx_connection
 
   - name: Update Inventory source
@@ -62,7 +63,6 @@
       name: "git-inventory-local"
       inventory: "local"
       organization: "{{ awx_organization }}"
-      source_path: projects/local/inventories/hosts.ini
       wait: true
       <<: *awx_connection
 
