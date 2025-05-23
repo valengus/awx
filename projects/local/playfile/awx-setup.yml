@@ -68,13 +68,14 @@
 
   - name: Create job template
     awx.awx.job_template:
-      name: "awx-setup"
-      job_type: "run"
+      name: "{{ item.name }}"
+      job_type: "{{ item.job_type }}"
       organization: "{{ awx_organization }}"
-      inventory: "local"
-      project: "awx"
-      playbook: "projects/local/playfile/awx-setup.yml"
-      credentials:
-      - "root"
+      inventory: "{{ item.inventory }}"
+      project: "{{ item.project }}"
+      playbook: "{{ item.playbook }}"
+      credentials: "{{ item.credentials }}"
       state: "present"
       <<: *awx_connection
+    with_items:
+    - { name: awx-setup, job_type: run, organization: "{{ awx_organization }}", inventory: local, project: awx, playbook: projects/local/playfile/awx-setup.yml, credentials: [root] }
