@@ -10,5 +10,33 @@
   delay: 10
   until: awx_health.json.instances[0].heartbeat is defined
 
-- ansible.builtin.include_tasks: cleanup.yml
-- ansible.builtin.include_tasks: organizations.yml
+- name: Cleanup
+  ansible.builtin.include_tasks: cleanup.yml
+
+- name: Add organizations
+  awx.awx.organization: "{{ item | combine(awx_connection) }}"
+  with_items: "{{ awx.organizations }}"
+
+- name: Add credentials
+  awx.awx.credential: "{{ item | combine(awx_connection) }}"
+  with_items: "{{ awx.credentials }}"
+
+- name: Add projects
+  awx.awx.project: "{{ item | combine(awx_connection) }}"
+  with_items: "{{ awx.projects }}"
+
+- name: Add inventories
+  awx.awx.inventory: "{{ item | combine(awx_connection) }}"
+  with_items: "{{ awx.inventories }}"
+
+- name: Add an inventory sources
+  awx.awx.inventory_source: "{{ item | combine(awx_connection) }}"
+  with_items: "{{ awx.inventory_sources }}"
+
+- name: Update Inventory sources
+  awx.awx.inventory_source_update: "{{ { 'name': item.name, 'inventory': item.inventory, 'organization': item.organization } | combine(awx_connection) | combine({'wait': true, 'interval': '10', 'request_timeout': '20', 'timeout': '300'}) }}"
+  with_items: "{{ awx.inventory_sources }}"
+
+- name: Create job templates
+  awx.awx.job_template: "{{ item | combine(awx_connection) }}"
+  with_items: "{{ awx.job_templates }}"

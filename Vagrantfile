@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
     config.vm.box      = "generic/oracle9"
     config.vm.provider :libvirt do |libvirt|
       libvirt.cpus                      = 2
-      libvirt.memory                    = 4 * 1024
+      libvirt.memory                    = 2 * 1024
       libvirt.qemu_use_session          = false
       libvirt.default_prefix            = 'vagrant_'
       libvirt.management_network_name   = 'vagrant'
@@ -50,7 +50,7 @@ Vagrant.configure("2") do |config|
     end
     config.vm.synced_folder '.', '/vagrant', disabled: true
     config.vm.provision "ansible" do |ansible|
-      ansible.playbook = "projects/local/playfile/bootstrap.yml"  
+      ansible.playbook = "environments/local/playfile/bootstrap.yml"  
       ansible.limit    = "all"
       ansible.groups = {
         "k3s"      => ["k3s-master01", "k3s-node0[1:#{$k3s_num_instances}]"],
@@ -65,7 +65,7 @@ Vagrant.configure("2") do |config|
     curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE='644' sh -s - --docker --disable=traefik
     SHELL
     config.vm.provision "ansible" do |ansible|
-      ansible.playbook = "projects/local/playfile/awx-setup.yml"  
+      ansible.playbook = "environments/local/playfile/awx-setup.yml"  
     end
     (1..$k3s_num_instances).each do |i|
       config.vm.provision "shell", inline: <<-SHELL
