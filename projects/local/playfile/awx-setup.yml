@@ -6,7 +6,7 @@
   vars:
     awx_operator_version: "2.19.1"
     awx_version: "24.6.1"
-    awx_organization: organization
+    awx_organization: Default
     awx_connection: &awx_connection
       controller_host: "http://localhost:30080"
       controller_username: "admin"
@@ -84,22 +84,8 @@
       group: root
       mode: '0600'
 
-  # - name: Wait until AWX is up
-  #   ansible.builtin.uri:
-  #     url: http://localhost:30080/api/v2/ping/
-  #     method: GET
-  #     return_content: yes
-  #     status_code: 200
-  #   register: awx_health
-  #   retries: 30
-  #   delay: 10
-  #   until: awx_health.json.heartbeat is defined
-
-  - name: Add organizations
-    awx.awx.organization:
-      name: "{{ awx_organization }}"
-      state: present
-      <<: *awx_connection
+  - ansible.builtin.include_role:
+      name: awx
 
   - name: Add Credentials
     awx.awx.credential:

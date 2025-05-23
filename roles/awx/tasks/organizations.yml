@@ -1,0 +1,9 @@
+---
+- name: Add organizations
+  awx.awx.organization: 
+    name: "{{ item }}"
+    state: present
+    controller_host: "{{ awx_url }}"
+    controller_username: "{{ awx_username }}"
+    controller_password: "{{ awx_password }}"
+  with_items: "{{ awx.organizations }}"

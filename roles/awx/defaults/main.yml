@@ -1,0 +1,14 @@
+---
+awx_url: "http://localhost:30080"
+awx_username: "admin"
+awx_password: "password"
+
+awx_cleanup:
+  job_templates: ['Demo Job Template']
+  credentials: [{name: 'Demo Credential', type: 'Machine'}]
+  inventories: [{name: 'Demo Inventory', organization: 'Default'}]
+  projects: ["Demo Project"]
+  organizations: []
+
+awx:
+  organizations: 'Default'

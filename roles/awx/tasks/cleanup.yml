@@ -1,0 +1,47 @@
+---
+- name: Delete job templates
+  awx.awx.job_template:
+    name: "{{ item }}"
+    state: absent
+    controller_host: "{{ awx_url }}"
+    controller_username: "{{ awx_username }}"
+    controller_password: "{{ awx_password }}"
+  with_items: "{{ awx_cleanup.job_templates }}"
+
+- name: Delete credentials
+  awx.awx.credential:
+    name: "{{ item.name }}"
+    credential_type: "{{ item.type }}"
+    state: absent
+    controller_host: "{{ awx_url }}"
+    controller_username: "{{ awx_username }}"
+    controller_password: "{{ awx_password }}"
+  with_items: "{{ awx_cleanup.credentials }}"
+
+- name: Delete inventories
+  awx.awx.inventory:
+    name: "{{ item.name }}"
+    organization: "{{ item.organization }}"
+    state: absent
+    controller_host: "{{ awx_url }}"
+    controller_username: "{{ awx_username }}"
+    controller_password: "{{ awx_password }}"
+  with_items: "{{ awx_cleanup.inventories }}"
+
+- name: Delete projects
+  awx.awx.project:
+    name: "{{ item }}"
+    state: absent
+    controller_host: "{{ awx_url }}"
+    controller_username: "{{ awx_username }}"
+    controller_password: "{{ awx_password }}"
+  with_items: "{{ awx_cleanup.projects }}"
+
+- name: Delete organizations
+  awx.awx.organization:
+    name: "{{ item }}"
+    state: absent
+    controller_host: "{{ awx_url }}"
+    controller_username: "{{ awx_username }}"
+    controller_password: "{{ awx_password }}"
+  with_items: "{{ awx_cleanup.organizations }}"

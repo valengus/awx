@@ -1,0 +1,14 @@
+---
+- name: Wait until AWX is up
+  ansible.builtin.uri:
+    url: "{{ awx_url }}/api/v2/ping/"
+    method: GET
+    return_content: yes
+    status_code: 200
+  register: awx_health
+  retries: 60
+  delay: 10
+  until: awx_health.json.instances[0].heartbeat is defined
+
+- ansible.builtin.include_tasks: cleanup.yml
+- ansible.builtin.include_tasks: organizations.yml
