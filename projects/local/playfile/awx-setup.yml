@@ -105,7 +105,7 @@
       state: present
       scm_type: git
       scm_url: https://github.com/valengus/awx.git
-      scm_update_on_launch: false
+      wait: false
       <<: *awx_connection
 
   - name: Add inventories
