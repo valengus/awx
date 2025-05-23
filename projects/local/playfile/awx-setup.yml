@@ -1,0 +1,29 @@
+---
+- name: Setup awx
+  hosts: localhost
+  become: true
+
+  vars:
+    awx_connection: &awx_connection
+      controller_host: "http://localhost:30080"
+      controller_username: "admin"
+      controller_password: "password"
+
+  tasks:
+
+  - name: Add organizations
+    awx.awx.organization:
+      name: "organization"
+      description: "organization"
+      state: present
+      <<: *awx_connection
+
+  - name: Add Credentials
+    awx.awx.credential:
+      name: root
+      credential_type: Machine
+      organization: "organization"
+      inputs:
+        username: root
+        password: "root"
+      <<: *awx_connection
