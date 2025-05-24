@@ -7,7 +7,7 @@
     group: root
     mode: '0644'
   
-- name: Docker | Add Docker CE repository (stable)
+- name: Add Docker CE repository (stable)
   ansible.builtin.yum_repository:
     name: "docker-ce-stable"
     description: "Docker CE Stable - $basearch"
