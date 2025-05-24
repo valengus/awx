@@ -19,13 +19,13 @@ awx:
   organizations: 
   - name: Default
   credentials:
-  - { name: root, organization: Default, credential_type: Machine,  inputs: { username: root, password: root } }
+  - { name: 'root:root', organization: Default, credential_type: Machine,  inputs: { username: root, password: root } }
   projects: 
   - { name: ansible, organization: Default, scm_type: git, scm_url: https://github.com/valengus/awx.git }
   inventories:
   - { name: local, organization: Default }
   inventory_sources:
-  - { name: "local_inv-scm_source", inventory: local, overwrite: true, update_on_launch: true, organization: Default, source: scm, source_project: ansible, source_path: environments/local/inventories/hosts.ini }
+  - { name: "local-scm-inv", inventory: local, overwrite: true, update_on_launch: true, organization: Default, source: scm, source_project: ansible, source_path: environments/local/inventories/hosts.ini }
   job_templates:
   - name: awx-setup
     job_type: run
@@ -34,4 +34,4 @@ awx:
     inventory: local
     project: ansible
     credentials:
-    - root
+    - 'root:root'
