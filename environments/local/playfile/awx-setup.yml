@@ -6,11 +6,6 @@
   vars:
     awx_operator_version: "2.19.1"
     awx_version: "24.6.1"
-    awx_organization: Default
-    awx_connection: &awx_connection
-      controller_host: "http://localhost:30080"
-      controller_username: "admin"
-      controller_password: "password"
 
   tasks:
 
