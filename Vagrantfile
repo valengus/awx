@@ -5,8 +5,8 @@ ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
 
 Vagrant.configure("2") do |config|
 
-  config.vm.define "oracle9" do |config|
-    config.vm.hostname = "oracle9"
+  config.vm.define "oraclelinux9" do |config|
+    config.vm.hostname = "oraclelinux9"
     config.vm.box      = "generic/oracle9"
     config.vm.provider :libvirt do |libvirt|
       libvirt.cpus                      = 2
