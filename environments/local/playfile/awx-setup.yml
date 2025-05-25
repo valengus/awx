@@ -1,0 +1,83 @@
+---
+- name: Setup awx
+  hosts: k3s-master01
+  become: true
+
+  vars:
+    awx_operator_version: "2.19.1"
+    awx_version: "24.6.1"
+
+  tasks:
+
+  - name: Install kustomize
+    ansible.builtin.unarchive:
+      src: https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.0.1/kustomize_v5.0.1_linux_amd64.tar.gz
+      dest: /usr/local/bin
+      creates: /usr/local/bin/kustomize
+      remote_src: yes
+      mode: '0755'
+
+  - name: Ensure directory exists
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: directory
+      mode: '0755'
+    with_items:
+    - /var/lib/rancher/k3s/server/kustomizations
+    - /var/lib/rancher/k3s/server/kustomizations/awx-operator
+
+  - name: kustomization.yaml
+    ansible.builtin.copy:
+      dest: /var/lib/rancher/k3s/server/kustomizations/awx-operator/kustomization.yaml
+      content: |
+        ---
+        apiVersion: kustomize.config.k8s.io/v1beta1
+        kind: Kustomization
+        namespace: awx
+        resources:
+        - github.com/ansible/awx-operator/config/default?ref={{ awx_operator_version }}
+        images:
+        - name: quay.io/ansible/awx-operator
+          newTag: {{ awx_operator_version }}
+      owner: root
+      group: root
+      mode: '0600'
+    register: kustomization
+
+  - name: Run kubectl apply -k /var/lib/rancher/k3s/server/kustomizations/awx-operator
+    ansible.builtin.command: /usr/local/bin/kubectl apply -k /var/lib/rancher/k3s/server/kustomizations/awx-operator
+    when: kustomization.changed
+
+  - name: awx.yaml
+    ansible.builtin.copy:
+      dest: /var/lib/rancher/k3s/server/manifests/awx.yaml
+      content: |
+        ---
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          name: awx-admin-password
+          namespace: awx
+        stringData:
+          password: password
+
+        ---
+        apiVersion: awx.ansible.com/v1beta1
+        kind: AWX
+        metadata:
+          name: awx
+          namespace: awx
+        spec:
+          service_type: NodePort
+          nodeport_port: 30080
+          image: quay.io/ansible/awx
+          image_version: {{ awx_version }}
+          admin_user: admin
+          admin_password_secret: awx-admin-password
+
+      owner: root
+      group: root
+      mode: '0600'
+
+  - ansible.builtin.include_role:
+      name: awx

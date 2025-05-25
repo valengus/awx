@@ -1,0 +1,34 @@
+---
+awx_url: "http://localhost:30080"
+awx_username: "admin"
+awx_password: "password"
+
+awx_connection:
+  controller_host: "{{ awx_url }}"
+  controller_username: "{{ awx_username }}"
+  controller_password: "{{ awx_password }}"
+
+awx_cleanup:
+  job_templates: ['Demo Job Template']
+  credentials: [{name: 'Demo Credential', type: 'Machine'}]
+  inventories: [{name: 'Demo Inventory', organization: 'Default'}]
+  projects: ["Demo Project"]
+  organizations: []
+
+awx_organizations:
+- name: Default
+
+awx_credentials:
+- { name: 'root:root', credential_type: Machine,  inputs: { username: root, password: root }, organization: Default }
+
+awx_projects:
+- { name: valengus-awx, scm_type: git, scm_url: https://github.com/valengus/awx.git, scm_update_on_launch: true, organization: Default }
+
+awx_inventories:
+- { name: local, organization: Default }
+
+awx_inventory_sources:
+- { name: "local-scm-inv", inventory: local, overwrite: true, update_on_launch: true, organization: Default, source: scm, source_project: valengus-awx, source_path: environments/local/inventories/hosts.ini }
+
+awx_job_templates:
+- { name: awx-setup, inventory: local, project: valengus-awx, playbook: environments/local/playfile/awx-setup.yml, job_type: run, organization: Default, credentials: ['root:root'] }

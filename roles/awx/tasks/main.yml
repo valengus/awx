@@ -1,0 +1,42 @@
+---
+- name: Wait until AWX is up
+  ansible.builtin.uri:
+    url: "{{ awx_url }}/api/v2/ping/"
+    method: GET
+    return_content: yes
+    status_code: 200
+  register: awx_health
+  retries: 60
+  delay: 10
+  until: awx_health.json.instances[0].heartbeat is defined
+
+- name: Cleanup
+  ansible.builtin.include_tasks: cleanup.yml
+
+- name: Add organizations
+  awx.awx.organization: "{{ item | combine(awx_connection) }}"
+  with_items: "{{ awx_organizations }}"
+
+- name: Add credentials
+  awx.awx.credential: "{{ item | combine(awx_connection) }}"
+  with_items: "{{ awx_credentials }}"
+
+- name: Add projects
+  awx.awx.project: "{{ item | combine(awx_connection) }}"
+  with_items: "{{ awx_projects }}"
+
+- name: Add inventories
+  awx.awx.inventory: "{{ item | combine(awx_connection) }}"
+  with_items: "{{ awx_inventories }}"
+
+- name: Add an inventory sources
+  awx.awx.inventory_source: "{{ item | combine(awx_connection) }}"
+  with_items: "{{ awx_inventory_sources }}"
+
+- name: Update Inventory sources
+  awx.awx.inventory_source_update: "{{ { 'name': item.name, 'inventory': item.inventory, 'organization': item.organization } | combine(awx_connection) | combine({'wait': true, 'interval': '10', 'request_timeout': '20', 'timeout': '300'}) }}"
+  with_items: "{{ awx_inventory_sources }}"
+
+- name: Create job templates
+  awx.awx.job_template: "{{ item | combine(awx_connection) }}"
+  with_items: "{{ awx_job_templates }}"

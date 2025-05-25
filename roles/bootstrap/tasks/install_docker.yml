@@ -1,0 +1,30 @@
+---
+- name: Add docker repo gpg key
+  ansible.builtin.copy:
+    src: RPM-GPG-KEY-DOCKER
+    dest: "{{ bootstrap_docker_yum_repo.gpg_file }}"
+    owner: root
+    group: root
+    mode: '0644'
+  
+- name: Add Docker CE repository (stable)
+  ansible.builtin.yum_repository:
+    name: "docker-ce-stable"
+    description: "Docker CE Stable - $basearch"
+    baseurl: "{{ bootstrap_docker_yum_repo.url }}"
+    state: present
+    gpgkey: "file://{{ bootstrap_docker_yum_repo.gpg_file }}"
+    gpgcheck: true
+
+- name: Install Docker CE
+  ansible.builtin.dnf:
+    name: 
+    - docker-ce 
+    - docker-ce-cli  
+    - containerd.io
+
+- name: Ensure docker service is enabled & started
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true

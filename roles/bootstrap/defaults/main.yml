@@ -1,0 +1,21 @@
+---
+bootstrap_users:
+- { name: root, shell: /bin/bash, password: "{{ 'root' | password_hash('sha512') }}" }
+
+bootstrap_defaults_packages:
+- tar 
+- git 
+- make 
+- nano 
+- curl 
+- bash-completion 
+- sshpass 
+- dnf-plugins-core
+
+bootstrap_disable_firewalld: false
+bootstrap_disable_selinux: false
+bootstrap_install_docker: false
+
+bootstrap_docker_yum_repo:
+  url: https://download.docker.com/linux/centos/$releasever/$basearch/stable
+  gpg_file: /etc/pki/rpm-gpg/RPM-GPG-KEY-DOCKER

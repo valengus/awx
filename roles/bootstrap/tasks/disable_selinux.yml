@@ -1,0 +1,11 @@
+---
+- name: Set SELINUX=disabled in config file
+  ansible.builtin.replace:
+    path: /etc/selinux/config
+    regexp: '^SELINUX=.*'
+    replace: 'SELINUX=disabled'
+
+- name: Run setenforce 0
+  ansible.builtin.shell: setenforce 0
+  when: ansible_facts.selinux.status == "enabled"
+
