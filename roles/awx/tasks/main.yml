@@ -36,6 +36,7 @@
 - name: Update Inventory sources
   awx.awx.inventory_source_update: "{{ { 'name': item.name, 'inventory': item.inventory, 'organization': item.organization } | combine(awx_connection) | combine({'wait': true, 'interval': '10', 'request_timeout': '20', 'timeout': '300'}) }}"
   with_items: "{{ awx_inventory_sources }}"
+  retries: 2
 
 - name: Create job templates
   awx.awx.job_template: "{{ item | combine(awx_connection) }}"

@@ -36,7 +36,7 @@ Vagrant.configure("2") do |config|
     end
     config.vm.synced_folder '.', '/vagrant', disabled: true
     config.vm.provision "ansible" do |ansible|
-      ansible.playbook = "environments/local/playfile/bootstrap.yml"  
+      ansible.playbook = "environments/local/playfile/bootstrap.yml"
       ansible.limit    = "all"
       ansible.groups = {
         "k3s"      => ["k3s-master01", "k3s-node0[1:#{$k3s_num_instances}]"],
@@ -44,17 +44,14 @@ Vagrant.configure("2") do |config|
           "bootstrap_disable_firewalld" => "true",
           "bootstrap_disable_selinux"   => "true",
           "bootstrap_install_docker"    => "true",
+          "bootstrap_install_k3s"       => "true",
         }
       }
-    end
-    config.vm.provision "shell", inline: <<-SHELL
-    curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE='644' sh -s - --docker --disable=traefik
-    SHELL
-    (1..$k3s_num_instances).each do |i|
-      config.vm.provision "shell", inline: <<-SHELL
-      NODETOKEN=$(cat /var/lib/rancher/k3s/server/node-token)
-      sshpass -p "root" ssh -o "StrictHostKeyChecking no" root@k3s-node0#{i} "curl -sfL https://get.k3s.io | K3S_URL=https://k3s-master01:6443 K3S_TOKEN=$NODETOKEN sh -s - --docker "
-      SHELL
+      ansible.host_vars = {
+        "k3s-master01" => {
+          "bootstrap_k3s_server_role" => "master",
+        },
+      }
     end
     config.vm.provision "ansible" do |ansible|
       ansible.playbook = "environments/local/playfile/awx-setup.yml"  

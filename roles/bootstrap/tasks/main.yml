@@ -27,3 +27,7 @@
 - name: Install docker
   ansible.builtin.include_tasks: install_docker.yml
   when: bootstrap_install_docker
+
+- name: Install k3s
+  ansible.builtin.include_tasks: install_k3s.yml
+  when: bootstrap_install_k3s

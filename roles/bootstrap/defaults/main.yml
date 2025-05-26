@@ -2,20 +2,18 @@
 bootstrap_users:
 - { name: root, shell: /bin/bash, password: "{{ 'root' | password_hash('sha512') }}" }
 
-bootstrap_defaults_packages:
-- tar 
-- git 
-- make 
-- nano 
-- curl 
-- bash-completion 
-- sshpass 
-- dnf-plugins-core
+bootstrap_defaults_packages: [ tar, git, make, nano, curl, bash-completion, dnf-plugins-core ]
 
 bootstrap_disable_firewalld: false
 bootstrap_disable_selinux: false
-bootstrap_install_docker: false
 
+bootstrap_install_docker: false
 bootstrap_docker_yum_repo:
   url: https://download.docker.com/linux/centos/$releasever/$basearch/stable
   gpg_file: /etc/pki/rpm-gpg/RPM-GPG-KEY-DOCKER
+
+bootstrap_install_k3s: false
+bootstrap_k3s_version: "v1.32.4+k3s1"
+bootstrap_k3s_download_path: "https://github.com/k3s-io/k3s/releases/download"
+bootstrap_k3s_token: "f1cc219b039ccd0fcf9fcba01679a5a2"
+bootstrap_k3s_url: "https://k3s-master01:6443"
