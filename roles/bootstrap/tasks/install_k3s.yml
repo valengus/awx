@@ -2,14 +2,14 @@
 - name: Download k3s
   ansible.builtin.get_url:
     url: "{{ item.url }}"
-    dest: "/tmp/{{ item.url | basename }}"
+    dest: "{{ item.dest }}"
     checksum: "{{ item.checksum | default(omit) }}"
   delegate_to: localhost
   run_once: true
   with_items:
-  - { url: "{{ bootstrap_k3s_download_path }}/{{ bootstrap_k3s_version }}/k3s", checksum: "sha256:{{ bootstrap_k3s_download_path }}/{{ bootstrap_k3s_version }}/sha256sum-amd64.txt" }
-  - { url: "{{ bootstrap_k3s_download_path }}/{{ bootstrap_k3s_version }}/k3s-airgap-images-amd64.tar.zst", checksum: "sha256:{{ bootstrap_k3s_download_path }}/{{ bootstrap_k3s_version }}/sha256sum-amd64.txt" }
-  - { url: "https://get.k3s.io" }
+  - { url: "{{ bootstrap_k3s_download_path }}/{{ bootstrap_k3s_version }}/k3s", dest: /tmp/k3s, checksum: "sha256:{{ bootstrap_k3s_download_path }}/{{ bootstrap_k3s_version }}/sha256sum-amd64.txt" }
+  - { url: "{{ bootstrap_k3s_download_path }}/{{ bootstrap_k3s_version }}/k3s-airgap-images-amd64.tar.zst", dest: /tmp/k3s-airgap-images-amd64.tar.zst, checksum: "sha256:{{ bootstrap_k3s_download_path }}/{{ bootstrap_k3s_version }}/sha256sum-amd64.txt" }
+  - { url: "https://get.k3s.io", dest: /tmp/k3s_install.sh }
 
 - name: Create dirs
   ansible.builtin.file:
